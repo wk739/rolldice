@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>劉宥男的擲骰子大師 (V3 & V4)</title>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --card: #1e293b;
+            --text: #f8fafc;
+            --accent: #38bdf8;
+            --border: #334155;
+            --primary: #4f46e5;
+        }
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: system-ui, -apple-system, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 2rem 1rem;
+        }
+        .container {
+            max-width: 500px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        header {
+            text-align: center;
+        }
+        header h1 {
+            color: var(--accent);
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            font-weight: 800;
+        }
+        header p {
+            color: #94a3b8;
+            font-size: 0.95rem;
+        }
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .badge {
+            font-size: 0.75rem;
+            background: #0f172a;
+            padding: 0.25rem 0.5rem;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            color: #cbd5e1;
+        }
+        .dice-box {
+            background: #0f172a;
+            border: 2px dashed var(--border);
+            border-radius: 0.75rem;
+            padding: 2rem 1rem;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.2s;
+            margin-bottom: 1rem;
+        }
+        .dice-box:active {
+            transform: scale(0.98);
+            border-color: var(--accent);
+        }
+        .dice-emoji {
+            font-size: 4rem;
+            margin-bottom: 0.5rem;
+            display: inline-block;
+            transition: transform 0.3s;
+        }
+        .dice-box.animating .dice-emoji {
+            transform: rotate(360deg) scale(1.1);
+        }
+        .hint {
+            font-size: 0.85rem;
+            color: #94a3b8;
+        }
+        .result {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: var(--accent);
+            background: #0f172a;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            border: 1px solid var(--border);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>劉宥男的擲骰子大師</h1>
+            <p>整合 V3 (單擊) 與 V4 (雙擊及長按) 互動功能</p>
+        </header>
+
+        <!-- V3 區塊 -->
+        <div class="card">
+            <div class="section-title">
+                <span>V3 模式</span>
+                <span class="badge">點擊圖片隨機擲骰</span>
+            </div>
+            <div class="dice-box" id="v3Box">
+                <div class="dice-emoji" id="v3Icon">🎲</div>
+                <div class="hint">點擊圖片隨機擲骰 (1-6)</div>
+            </div>
+            <div class="result" id="v3Result">結果：尚未投擲</div>
+        </div>
+
+        <!-- V4 區塊 -->
+        <div class="card">
+            <div class="section-title">
+                <span>V4 模式</span>
+                <span class="badge">點擊、雙擊及長按圖片</span>
+            </div>
+            <div class="dice-box" id="v4Box">
+                <div class="dice-emoji" id="v4Icon">🎯</div>
+                <div class="hint">單擊 (1D6) / 雙擊 (2D12) / 長按 (3D20)</div>
+            </div>
+            <div class="result" id="v4Result">結果：尚未互動</div>
+        </div>
+    </div>
+
+    <script>
+        // V3 邏輯
+        const v3Box = document.getElementById('v3Box');
+        const v3Icon = document.getElementById('v3Icon');
+        const v3Result = document.getElementById('v3Result');
+
+        v3Box.addEventListener('click', () => {
+            v3Box.classList.add('animating');
+            const val = Math.floor(Math.random() * 6) + 1;
+            setTimeout(() => {
+                v3Box.classList.remove('animating');
+                v3Icon.textContent = ['⚀','⚁','⚂','⚃','⚄','⚅'][val-1];
+                v3Result.textContent = `點數：${val} 點`;
+            }, 300);
+        });
+
+        // V4 邏輯
+        const v4Box = document.getElementById('v4Box');
+        const v4Icon = document.getElementById('v4Icon');
+        const v4Result = document.getElementById('v4Result');
+
+        let pressTimer = null;
+        let isLongPress = false;
+
+        v4Box.addEventListener('click', (e) => {
+            if (isLongPress) {
+                isLongPress = false;
+                return;
+            }
+            triggerV4('單擊 (1D6)', '🎲', 1, 6);
+        });
+
+        v4Box.addEventListener('dblclick', (e) => {
+            e.preventDefault();
+            triggerV4('雙擊 (2D12)', '✨', 2, 12);
+        });
+
+        v4Box.addEventListener('mousedown', startLong);
+        v4Box.addEventListener('touchstart', startLong);
+        v4Box.addEventListener('mouseup', cancelLong);
+        v4Box.addEventListener('mouseleave', cancelLong);
+        v4Box.addEventListener('touchend', cancelLong);
+
+        function startLong() {
+            isLongPress = false;
+            pressTimer = setTimeout(() => {
+                isLongPress = true;
+                triggerV4('長按 (3D20)', '🔥', 3, 20);
+            }, 600);
+        }
+
+        function cancelLong() {
+            clearTimeout(pressTimer);
+        }
+
+        function triggerV4(name, icon, count, maxVal) {
+            v4Box.classList.add('animating');
+            v4Icon.textContent = icon;
+            let rolls = [];
+            let sum = 0;
+            for(let i=0; i<count; i++) {
+                let v = Math.floor(Math.random() * maxVal) + 1;
+                rolls.push(v);
+                sum += v;
+            }
+            setTimeout(() => {
+                v4Box.classList.remove('animating');
+                v4Result.textContent = `${name}：${sum} 點 (${rolls.join(', ')})`;
+            }, 300);
+        }
+    </script>
+</body>
+</html>
