@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>劉宥男的擲骰子大師</title>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-color: #f8fafc;
+            --text-secondary: #94a3b8;
+            --accent: #38bdf8;
+            --border: #334155;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-color); min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 2rem 1rem; }
+        .container { width: 100%; max-width: 600px; display: flex; flex-direction: column; gap: 1.5rem; }
+        header { text-align: center; margin-bottom: 0.5rem; }
+        header h1 { font-size: 2.25rem; color: var(--accent); margin-bottom: 0.5rem; font-weight: 800; }
+        header p { color: var(--text-secondary); font-size: 1rem; }
+        .card { background-color: var(--card-bg); border: 1px solid var(--border); border-radius: 1rem; padding: 1.5rem; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3); }
+        .controls-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.25rem; }
+        .control-group { display: flex; flex-direction: column; gap: 0.5rem; }
+        label { font-size: 0.875rem; font-weight: 600; color: var(--text-secondary); }
+        select, input { background-color: var(--bg-color); border: 1px solid var(--border); color: var(--text-color); padding: 0.75rem; border-radius: 0.5rem; font-size: 1rem; outline: none; }
+        .dice-display-area { min-height: 160px; display: flex; align-items: center; justifyContent: center; flex-wrap: wrap; gap: 1rem; margin: 1.5rem 0; }
+        .die { width: 70px; height: 70px; background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%); color: white; font-size: 1.75rem; font-weight: bold; display: flex; align-items: center; justify-content: center; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.2); }
+        .roll-btn { width: 100%; background-color: var(--primary); color: white; border: none; padding: 1rem; font-size: 1.125rem; font-weight: bold; border-radius: 0.75rem; cursor: pointer; transition: background-color 0.2s; }
+        .roll-btn:hover { background-color: var(--primary-hover); }
+        .results-summary { display: flex; justifyContent: space-between; align-items: center; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border); font-size: 1.1rem; }
+        .total-highlight { color: var(--accent); font-weight: 800; font-size: 1.5rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>劉宥男的擲骰子大師</h1>
+            <p>輕鬆擲出你需要的點數與數值！</p>
+        </header>
+        <div class="card">
+            <div class="controls-grid">
+                <div class="control-group">
+                    <label for="diceType">骰子類型</label>
+                    <select id="diceType">
+                        <option value="6">D6 (六面)</option>
+                        <option value="20" selected>D20 (二十面)</option>
+                        <option value="100">D100 (百分面)</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label for="diceCount">骰子數量</label>
+                    <input type="number" id="diceCount" value="1" min="1" max="20">
+                </div>
+            </div>
+            <div class="dice-display-area" id="diceContainer">
+                <div class="die">20</div>
+            </div>
+            <button class="roll-btn" id="rollBtn">立即擲骰！</button>
+            <div class="results-summary">
+                <span>總合結果：</span>
+                <span class="total-highlight" id="totalResult">--</span>
+            </div>
+        </div>
+    </div>
+    <script>
+        const rollBtn = document.getElementById('rollBtn');
+        const diceTypeSelect = document.getElementById('diceType');
+        const diceCountInput = document.getElementById('diceCount');
+        const diceContainer = document.getElementById('diceContainer');
+        const totalResult = document.getElementById('totalResult');
+
+        rollBtn.addEventListener('click', () => {
+            const type = parseInt(diceTypeSelect.value);
+            const count = parseInt(diceCountInput.value) || 1;
+            let sum = 0;
+            diceContainer.innerHTML = '';
+            for(let i=0; i<count; i++) {
+                const val = Math.floor(Math.random() * type) + 1;
+                sum += val;
+                const dieEl = document.createElement('div');
+                dieEl.className = 'die';
+                dieEl.textContent = val;
+                diceContainer.appendChild(dieEl);
+            }
+            totalResult.textContent = sum;
+        });
+    </script>
+</body>
+</html>
