@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0f172a"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="劉宥男的骰子專案"
+        android:textColor="#38bdf8"
+        android:textSize="26sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="V4：點擊、雙擊及長按圖片"
+        android:textColor="#94a3b8"
+        android:textSize="14sp"
+        android:layout_marginBottom="32dp" />
+
+    <ImageView
+        android:id="@+id/diceImageView"
+        android:layout_width="160dp"
+        android:layout_height="160dp"
+        android:background="#1e293b"
+        android:padding="24dp"
+        android:src="@android:drawable/ic_menu_rotate"
+        android:contentDescription="骰子圖片"
+        android:clickable="true"
+        android:focusable="true"
+        android:elevation="4dp" />
+
+    <TextView
+        android:id="@+id/resultTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:background="#1e293b"
+        android:padding="16dp"
+        android:text="請點擊、雙擊或長按上方圖片"
+        android:textColor="#f8fafc"
+        android:textSize="16sp"
+        android:gravity="center" />
+
+</LinearLayout>
